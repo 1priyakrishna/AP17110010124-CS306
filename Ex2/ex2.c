@@ -1,60 +1,41 @@
+digit [0-9]*
+id [a-zA-Z][a-zA-Z0-9]*
+num [0-9]*\.[0-9]*
+
+%{
 #include<stdio.h>
-#include<stdlib.h>
 #include<string.h>
-#include<ctype.h>
- 
-int isKeyword(char buffer[]){
-	char keywords[32][10] = {"auto","break","case","char","const","continue","default",
-							"do","double","else","enum","extern","float","for","goto",
-							"if","int","long","register","return","short","signed",
-							"sizeof","static","struct","switch","typedef","union",
-							"unsigned","void","volatile","while"};
-	int i, flag = 0;
-	
-	for(i = 0; i < 32; ++i){
-		if(strcmp(keywords[i], buffer) == 0){
-			flag = 1;
-			break;
-		}
-	}
-	
-	return flag;
+int i=0,j=0,cnt=0;
+char st[10][10];
+int exists(char st[10][10],char *id, int n);
+%}
+
+%%
+int |
+float |
+char |
+double |
+void { printf("\n %s is keyword",yytext);}
+"<=" {printf("\n %s is Relational operator Lessthan or Equal to",yytext);}
+"<" {printf("\n %s is Relational operator Lessthan",yytext);}
+">=" {printf("\n %s is Relational operator Greaterthan or Equal to",yytext);}
+">" {printf("\n %s is Relational operator Greaterthan",yytext);}
+"==" {printf("\n %s is Relational operator Equal to",yytext);}
+"!=" {printf("\n %s is Relational operator Not Equal to",yytext);}
+"/*" {printf("\n %s is start of Multiline Comments",yytext);}
+"*/" {printf("\n %s is end of Multiline Comments",yytext);}
+"//" {printf("\n %s is single line comment",yytext);}
+{id} { printf("\n %s is identifier",yytext); }
+{num} { printf("\n %s is float",yytext);}
+{digit} {printf("\n %s is digit",yytext);}
+%%
+main()
+{
+yyin = fopen("inp.txt", "r"); 
+yyout = fopen("out.txt", "w");
+yylex();
 }
- 
-int main(){
-	char ch, buffer[15], operators[] = "+-*/%=";
-	FILE *fp;
-	int i,j=0;
-	
-	fp = fopen("programforexercise2.txt","r");
-	
-	if(fp == NULL){
-		printf("error while opening the file\n");
-		exit(0);
-	}
-	
-	while((ch = fgetc(fp)) != EOF){
-   		for(i = 0; i < 6; ++i){
-   			if(ch == operators[i])
-   				printf("%c is operator\n", ch);
-   		}
-   		
-   		if(isalnum(ch)){
-   			buffer[j++] = ch;
-   		}
-   		else if((ch == ' ' || ch == '\n') && (j != 0)){
-   				buffer[j] = '\0';
-   				j = 0;
-   				   				
-   				if(isKeyword(buffer) == 1)
-   					printf("%s is keyword\n", buffer);
-   				else
-   					printf("%s is indentifier\n", buffer);
-   		}
-   		
-	}
-	
-	fclose(fp);
-	
-	return 0;
+int yywrap()
+{
+return 1;
 }
